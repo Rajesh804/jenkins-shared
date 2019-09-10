@@ -59,12 +59,6 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
-
-    def causes = currentBuild.rawBuild.getCauses()
-
-    println causes.dump()
-    println causes
-    
     slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
   }
 
