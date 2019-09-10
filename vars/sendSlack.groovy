@@ -11,7 +11,7 @@ def getChangeString() {
     for (int j = 0; j < entries.length; j++) {
       def entry = entries[j]
       truncated_msg = entry.msg.take(MAX_MSG_LEN)
-      changeString += " - ${truncated_msg} [${entry.author}]\n"
+      changeString += "\t- ${truncated_msg} [${entry.author}]\n"
     }
   }
 
@@ -58,15 +58,15 @@ def call(String buildResult) {
 
     if (SCMCause) {
 
-      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
+      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + getChangeString()
 
     } else if (UserCause) {
 
       // println UserCause.properties
-      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
+      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + getChangeString()
 
     } else {
-      error 'This job cant be triggered however it was just triggered, sorry.'
+      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by Unknown" + "\nChanges:\n" + "\t" + getChangeString()
     }
     // slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
   }
