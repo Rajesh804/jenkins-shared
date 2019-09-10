@@ -56,13 +56,13 @@ def getAbortUser()
   return causee
 }
 
-def SCMTriggerCause
-def UserIdCause
-def SCMCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
-def UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
+    def SCMTriggerCause
+    def UserIdCause
+    def SCMCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
+    def UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
     if (UserCause) {
       slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
     } else if (SCMCause) {
