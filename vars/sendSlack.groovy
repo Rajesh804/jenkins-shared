@@ -58,7 +58,8 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
-
+    def SCMTriggerCause
+    def UserIdCause
     def SCMCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
     def UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$
     if (UserCause) {
