@@ -32,6 +32,10 @@ def getBuildUser() {
     return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
 }
 
+def author() {
+  sh(returnStdout: true, script: "git --no-pager show -s --format='%an'").trim()
+}
+
 def getAbortUser()
 {
   def causee = ''
@@ -54,9 +58,15 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
-    // slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
-    slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" + currentBuild.getBuildCauses() + "\nChanges:\n" + "\t" + getChangeString()
 
+    def SCMCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
+    def UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$
+    if (UserCause) {
+      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
+    } else (SCMCause) {
+      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
+    }
+    // slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
   }
 
   //DEV Stage notification
