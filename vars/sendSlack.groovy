@@ -59,18 +59,26 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
-    def SCMTriggerCause
-    def UserIdCause
-    def SCMCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
-    def UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
-    if (UserCause) {
-      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
-    } else if (SCMCause) {
-      slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
-    }
-    else {
-       println "unknown cause"
-    }
+    
+        def SCMTriggerCause
+        def UserIdCause
+        def GitHubPRCause
+        def PRCause = currentBuild.rawBuild.getCause(org.jenkinsci.plugins.github.pullrequest.GitHubPRCause)
+        def SCMCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
+        def UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+
+        if (PRCause) {
+            println PRCause.getShortDescription()
+            slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + PRCause.getShortDescription() + "\nChanges:\n" + "\t" + getChangeString()
+        } else if (SCMCause) {
+            println SCMCause.getShortDescription()
+            slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
+        } else if (UserCause) {
+            println UserCause.getShortDescription()
+            slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + UserCause.getShortDescription() + "\nChanges:\n" + "\t" + getChangeString()
+        }else {
+           println "unknown cause"
+        }
     // slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
   }
 
