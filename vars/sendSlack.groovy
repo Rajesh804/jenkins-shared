@@ -54,7 +54,9 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
-    slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
+    // slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
+    slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" + currentBuild.getBuildCauses() + "\nChanges:\n" + "\t" + getChangeString()
+
   }
 
   //DEV Stage notification
