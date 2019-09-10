@@ -59,6 +59,32 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
+
+    def causes = currentBuild.rawBuild.getCauses()
+
+    println causes.dump()
+    println causes
+    PRCause   = currentBuild.rawBuild.getCause(org.jenkinsci.plugins.github.pullrequest.GitHubPRCause)
+    SCMCause  = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
+    UserCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+
+
+
+    if (PRCause) {
+
+      println PRCause.properties
+
+    } else if (SCMCause) {
+
+      println SCMCause.properties
+
+    } else if (UserCause) {
+
+      println UserCause.properties
+
+    } else {
+      error 'This job cant be triggered however it was just triggered, sorry.'
+    }
     slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + author() + "\nChanges:\n" + "\t" + getChangeString()
   }
 
