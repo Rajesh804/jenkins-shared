@@ -21,20 +21,15 @@ def getChangeString() {
   return changeString
 }
 
-def getBuildUser() {
-  return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
-}
-
-def author() {
-  sh(returnStdout: true, script: "git --no-pager show -s --format='%an'").trim()
-}
-
 def getCauser(def build) {
   while(build.previousBuild) {
     build = build.previousBuild
   }
-
   return build.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+}
+
+def getBuildUser() {
+    return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
 }
 
 def getAbortUser()
@@ -59,7 +54,7 @@ def getAbortUser()
 
 def call(String buildResult) {
   if ( buildResult == "STARTED" ) {
-    slackSend color: "good", message: "${env.JOB_NAME} - Build:<${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getCauser(currentBuild).userId + "\nChanges:\n" + "\t" + getChangeString()
+    slackSend color: "good", message: "${env.JOB_NAME} - Build: <${env.BUILD_URL}|#${env.BUILD_NUMBER}> Started by " + getBuildUser() + "\nChanges:\n" + "\t" + getChangeString()
   }
 
   //DEV Stage notification
